@@ -1,0 +1,28 @@
+type Category {
+  id: ID!
+  name: String!
+  description: String!
+  status: Boolean
+}
+
+input CreateCategory {
+  name: String!
+  description: String!
+  status: Boolean
+}
+
+input UpdateCategory {  # Corrected from UpdateProduct to UpdateCategory
+  name: String
+  description: String
+}
+
+type Query {
+  singleCategory(id: ID!): Category
+  allCategory: [Category]
+}
+
+type Mutation {
+  createCategory(input: CreateCategory!): Category
+  updateCategory(input: UpdateCategory): Category
+  deleteCategory(id: ID!): Boolean  # Corrected 'in' to 'id'
+}

@@ -14,7 +14,7 @@ input CreateProduct {
 }
 
 input UpdateProduct {
-  id: String!
+  id: ID!  # Ensure this is ID and not String for consistency
   name: String
   price: Float
   category: String

@@ -2,9 +2,11 @@ import { ApolloServer } from "@apollo/server";
 import { expressMiddleware } from "@apollo/server/express4";
 import cors from "cors";
 import express from "express";
-import { readFile } from "node:fs/promises";
+// import { readFile } from "node:fs/promises";
 import mongoose from "mongoose";
-import ProductResolvers from "./product/product.resolver.js";
+// import ProductResolvers from "./product/product.resolver.js";
+import typeDefs from "./typeDefs.js";
+import resolvers from "./resolverList.js";
 
 const PORT = 9000;
 
@@ -21,13 +23,13 @@ mongoose
     console.log("Database not connected ", err);
   });
 
-const typeDefs = await readFile("./src/product/product.schema.graphql", "utf8"); 
-
+// const typeDefs = await readFile("./src/product/product.schema.graphql", "utf8");
+ 
 const apolloServer = new ApolloServer({
   typeDefs,
-  resolvers: ProductResolvers,
+  resolvers,
 });
-await apolloServer.start();
+await apolloServer.start();  
 
 app.use("/graphql", expressMiddleware(apolloServer));
 
