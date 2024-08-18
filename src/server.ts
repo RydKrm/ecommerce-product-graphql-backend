@@ -6,7 +6,7 @@ import express from "express";
 import mongoose from "mongoose";
 // import ProductResolvers from "./product/product.resolver.js";
 import typeDefs from "./typeDefs.js";
-import resolvers from "./resolverList.js";
+import resolvers from "./resolvers.js";
 
 const PORT = 9000;
 
@@ -24,13 +24,13 @@ mongoose
   });
 
 // const typeDefs = await readFile("./src/product/product.schema.graphql", "utf8");
- 
+
 const apolloServer = new ApolloServer({
   typeDefs,
   resolvers,
 });
-await apolloServer.start();  
-
+await apolloServer.start();
+// @ts-ignore
 app.use("/graphql", expressMiddleware(apolloServer));
 
 app.listen({ port: PORT }, () => {

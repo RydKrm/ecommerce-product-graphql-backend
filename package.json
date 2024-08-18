@@ -28,10 +28,12 @@
     "@parcel/watcher": "^2.3.0",
     "@tsconfig/node18": "^18.2.2",
     "@types/cors": "^2.8.14",
+    "@types/node": "^22.4.0",
     "concurrently": "^8.2.1",
     "nodemon": "^3.0.1",
+    "ts-node": "^10.9.2",
     "tsx": "^4.6.2",
-    "typescript": "^5.2.2"
+    "typescript": "^5.5.4"
   },
   "nodemonConfig": {
     "ext": "graphql,ts",
