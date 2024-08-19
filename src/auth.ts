@@ -1,23 +1,28 @@
-// import { Request, Response } from 'express';
-import { expressjwt } from "express-jwt";
-// import jwt from 'jsonwebtoken';
+import { Request, Response, NextFunction } from "express";
+import jwt from "jsonwebtoken";
 
-const secret = Buffer.from("Zn8Q5tyZ/G1MHltc4F/gTkVJMlrbKiZt", "base64");
+export interface reqUser extends Request {
+  user?: any;
+}
 
-export const authMiddleware = expressjwt({
-  algorithms: ["HS256"],
-  credentialsRequired: false,
-  secret,
-});
+const authenticateToken = (req: reqUser, res: Response, next: NextFunction) => {
+  const authHeader = req.headers.authorization;
+  const token = authHeader && authHeader.split(" ")[1];
 
-// export async function handleLogin(req: Request, res: Response) {
-//   const { email, password } = req.body;
-//   const user = await getUserByEmail(email);
-//   if (!user || user.password !== password) {
-//     res.sendStatus(401);
-//   } else {
-//     const claims = { sub: user.id, email: user.email };
-//     const token = jwt.sign(claims, secret);
-//     res.json({ token });
-//   }
-// }
+  if (!token) {
+    req.user = null;
+    return next();
+  }
+  const secret = process.env.JWT_SECRET as string;
+
+  jwt.verify(token, secret, (err: any, user: any) => {
+    if (err) {
+      req.user = null;
+    } else {
+      req.user = user;
+    }
+    next();
+  });
+};
+
+export default authenticateToken;

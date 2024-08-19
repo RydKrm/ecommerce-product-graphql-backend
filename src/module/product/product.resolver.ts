@@ -32,9 +32,14 @@ const ProductResolvers: IResolvers = {
           category: string;
           description: string;
         };
-      }
+      },
+      context: any
     ) {
       try {
+        console.log("context ", context);
+        if (context.user) {
+          throw new Error("Not authenticate");
+        }
         const product = new Product(input);
         return await product.save();
       } catch (error) {
