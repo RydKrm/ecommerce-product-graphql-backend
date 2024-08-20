@@ -1,29 +1,28 @@
-import { ApolloServer } from "@apollo/server";
+import { ApolloServer, BaseContext } from "@apollo/server";
 import { expressMiddleware } from "@apollo/server/express4";
+import type { ExpressContextFunctionArgument } from "@apollo/server/express4"; // Import this type
 import cors from "cors";
 import express from "express";
-// import { readFile } from "node:fs/promises";
 import mongoose from "mongoose";
-// import ProductResolvers from "./product/product.resolver.js";
 import typeDefs from "./typeDefs.js";
 import resolvers from "./resolvers.js";
-import authenticateToken from "./auth.js";
+import authenticateToken, { reqUser } from "./auth.js";
+import { startStandaloneServer } from "@apollo/server/standalone";
+import { authMiddleware } from "./../build/auth";
 
-const PORT = 9000;
-interface Context {
-  user?: any; // You can replace `any` with a more specific type if you know the structure of the user object
+const PORT = 9090;
+
+// Define your context type
+interface Context extends BaseContext {
+  user?: any;
 }
 
-export interface AuthenticatedRequest extends Request {
-  user?: any; // Replace `any` with your specific user type if known
-}
+// const app = express();
+// app.use(cors(), express.json());
+// app.use((req, res, next) => {
+//   authenticateToken(req, res, next);
+// });
 
-const app = express();
-app.use(cors(), express.json());
-// app.use(cors(), express.json(), apolloMiddleware);
-app.use((req, res, next) => {
-  authenticateToken(req, res, next);
-});
 mongoose
   .connect("mongodb://localhost:27017/newGraphql")
   .then(() => {
@@ -33,18 +32,43 @@ mongoose
     console.log("Database not connected ", err);
   });
 
-const apolloServer = new ApolloServer({
+// const apolloServer = new ApolloServer<Context>({
+//   typeDefs,
+//   resolvers,
+//   context: ({ req }: ExpressContextFunctionArgument) => {
+//     console.log("Context User: ", (req as reqUser).user);
+//     return { user: (req as reqUser).user };
+//   },
+// });
+
+// await apolloServer.start();
+// app.use("/graphql", expressMiddleware(apolloServer));
+
+const server = new ApolloServer<Context>({
   typeDefs,
   resolvers,
-  context: ({ req }: { req: AuthenticatedRequest }): Context => {
-    return { user: req.user };
+});
+
+const { url } = await startStandaloneServer(server, {
+  context: async ({ req }) => {
+    console.log(req.headers);
+    // return true;
+    const authHeader = req.headers?.authorization || ""; // .authorization || "";
+    const token = authHeader.split(" ")[1];
+    if (token === "123456") {
+      return true;
+    } else {
+      return false;
+    }
+
+    // const user = req.user;
+    // return user;
   },
 });
-await apolloServer.start();
-// @ts-ignore
-app.use("/graphql", expressMiddleware(apolloServer));
 
-app.listen({ port: PORT }, () => {
-  console.log(`Server running on port ${PORT}`);
-  console.log(`GraphQL endpoint: http://localhost:${PORT}/graphql`);
-});
+console.log("server start at : ", url);
+
+// app.listen({ port: PORT }, () => {
+//   console.log(`Server running on port ${PORT}`);
+//   console.log(`GraphQL endpoint: http://localhost:${PORT}/graphql`);
+// });

@@ -13,16 +13,36 @@ const authenticateToken = (req: reqUser, res: Response, next: NextFunction) => {
     req.user = null;
     return next();
   }
-  const secret = process.env.JWT_SECRET as string;
 
-  jwt.verify(token, secret, (err: any, user: any) => {
-    if (err) {
-      req.user = null;
+  try {
+    // * this line of code work after microservice works
+    // const secret = process.env.JWT_SECRET as string;
+    // const verifyToken = jwt.verify(token, secret);
+    // console.log("auth header ", verifyToken);
+    // if (verifyToken) {
+    //   req.user = verifyToken;
+    // } else {
+    //   req.user = null;
+    // }
+    if (token === "123456") {
+      req.user = true;
     } else {
-      req.user = user;
+      req.user = null;
     }
     next();
-  });
+  } catch (error) {
+    req.user = null;
+    next();
+  }
+
+  // jwt.verify(token, secret, (err: any, user: any) => {
+  //   if (err) {
+  //     req.user = null;
+  //   } else {
+  //     req.user = user;
+  //   }
+  //   next();
+  // });
 };
 
 export default authenticateToken;

@@ -36,8 +36,7 @@ const ProductResolvers: IResolvers = {
       context: any
     ) {
       try {
-        console.log("context ", context);
-        if (context.user) {
+        if (!context) {
           throw new Error("Not authenticate");
         }
         const product = new Product(input);
