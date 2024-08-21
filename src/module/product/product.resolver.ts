@@ -1,5 +1,7 @@
 import { IResolvers } from "@graphql-tools/utils";
 import Product from "./product.model.js";
+import authChecker from "../../auth/authChecker.js";
+import auth from "../../auth/authHoC.js";
 
 const ProductResolvers: IResolvers = {
   Query: {
@@ -21,30 +23,39 @@ const ProductResolvers: IResolvers = {
   },
 
   Mutation: {
-    async createProduct(
-      _,
-      {
-        input,
-      }: {
-        input: {
-          name: string;
-          price: number;
-          category: string;
-          description: string;
-        };
-      },
-      context: any
-    ) {
-      try {
-        if (!context) {
-          throw new Error("Not authenticate");
+    // async createProduct(
+    //   _,
+    //   {
+    //     input,
+    //   }: {
+    //     input: {
+    //       name: string;
+    //       price: number;
+    //       category: string;
+    //       description: string;
+    //     };
+    //   },
+    //   context: any
+    // ) {
+    //   authChecker("manager", context);
+    //   try {
+    //     const product = new Product(input);
+    //     return await product.save();
+    //   } catch (error) {
+    //     throw new Error("Error creating product");
+    //   }
+    // },
+    createProduct: auth(
+      "manager",
+      async (_: any, { input }: any, context: any) => {
+        try {
+          const product = new Product(input);
+          return await product.save();
+        } catch (error) {
+          throw new Error("Error creating product");
         }
-        const product = new Product(input);
-        return await product.save();
-      } catch (error) {
-        throw new Error("Error creating product");
       }
-    },
+    ),
 
     async updateProduct(
       _,
@@ -58,8 +69,11 @@ const ProductResolvers: IResolvers = {
           category?: string;
           description?: string;
         };
-      }
+      },
+      context: any
     ) {
+      const userRole = context.role;
+      authChecker("manager", context);
       try {
         const product = await Product.findByIdAndUpdate(
           input.id,

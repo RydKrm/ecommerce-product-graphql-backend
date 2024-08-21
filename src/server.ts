@@ -6,15 +6,14 @@ import express from "express";
 import mongoose from "mongoose";
 import typeDefs from "./typeDefs.js";
 import resolvers from "./resolvers.js";
-import authenticateToken, { reqUser } from "./auth.js";
+import authenticateToken, { reqUser } from "./auth/authBasic.js";
 import { startStandaloneServer } from "@apollo/server/standalone";
-import { authMiddleware } from "./../build/auth";
 
 const PORT = 9090;
 
 // Define your context type
 interface Context extends BaseContext {
-  user?: any;
+  user?: { role: string } | any;
 }
 
 // const app = express();
@@ -51,15 +50,19 @@ const server = new ApolloServer<Context>({
 
 const { url } = await startStandaloneServer(server, {
   context: async ({ req }) => {
-    console.log(req.headers);
+    // console.log(req.headers);
     // return true;
     const authHeader = req.headers?.authorization || ""; // .authorization || "";
     const token = authHeader.split(" ")[1];
+    const user: any = {};
     if (token === "123456") {
-      return true;
+      user.role = "user";
+    } else if (token === "manager1234") {
+      user.role = "manager";
     } else {
-      return false;
+      user.role = null;
     }
+    return user;
 
     // const user = req.user;
     // return user;
