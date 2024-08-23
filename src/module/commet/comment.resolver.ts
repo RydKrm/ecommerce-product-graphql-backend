@@ -1,6 +1,5 @@
 import { IResolvers } from "@graphql-tools/utils";
 import CommentModel from "./comment.model.js";
-
 interface IComment {
   id: string;
   productId: string;

@@ -59,6 +59,10 @@ const { url } = await startStandaloneServer(server, {
       user.role = "user";
     } else if (token === "manager1234") {
       user.role = "manager";
+    } else if (token === "seller1234") {
+      user.role = "seller";
+    } else if (token === "admin1234") {
+      user.role = "admin";
     } else {
       user.role = null;
     }

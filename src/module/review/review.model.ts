@@ -6,6 +6,7 @@ export interface IReview extends Document {
   product_id: mongoose.Types.ObjectId;
   rating: number;
   description: string;
+  status: boolean
 }
 
 const ReviewSchema: Schema<IReview> = new Schema({
@@ -13,6 +14,7 @@ const ReviewSchema: Schema<IReview> = new Schema({
   product_id: { type: Schema.Types.ObjectId, required: true, ref: "Product" },
   rating: { type: Number, required: true, max: 5, min: 0 },
   description: { type: String },
+  status: {type: Boolean, default:true}
 });
 
 const ReviewModel = model<IReview>("Review", ReviewSchema);

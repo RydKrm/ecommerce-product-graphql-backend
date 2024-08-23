@@ -1,28 +1,40 @@
 type Category {
-  id: ID!
-  name: String!
-  description: String!
+  id: String
+  name: String
+  description: String
   status: Boolean
 }
 
 input CreateCategory {
   name: String!
   description: String!
-  status: Boolean
 }
 
-input UpdateCategory {  # Corrected from UpdateProduct to UpdateCategory
+input UpdateCategory {
+  id: ID!
   name: String
   description: String
 }
 
+type CategoryResponse {
+  status: Boolean!
+  message: String!
+  data: Category
+}
+
+type CategoryResponseList {
+  status: Boolean!
+  message: String!
+  data: [Category]
+}
+
 type Query {
-  singleCategory(id: ID!): Category
-  allCategory: [Category]
+  singleCategory(id: ID!): CategoryResponse
+  allCategory: CategoryResponseList
 }
 
 type Mutation {
-  createCategory(input: CreateCategory!): Category
-  updateCategory(input: UpdateCategory): Category
-  deleteCategory(id: ID!): Boolean  # Corrected 'in' to 'id'
+  createCategory(input: CreateCategory!): CategoryResponse
+  updateCategory(input: UpdateCategory): CategoryResponse
+  deleteCategory(id: ID!): CategoryResponse
 }
